@@ -1,0 +1,6 @@
+{
+  "name": "A Private Memory",
+  "description": "A cinematic, mobile-first private interactive birthday memory experience with dual password-gated access paths.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
