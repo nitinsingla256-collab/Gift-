@@ -13,17 +13,22 @@ import {
   Heart,
   Feather,
   RotateCcw,
-  Maximize2
+  Maximize2,
+  BookOpen,
+  MessageSquareHeart
 } from 'lucide-react';
 import { tenHerPhotographs, GalleryMemorySlot } from '../data/memoryGalleryData';
 import { CinematicShayariSequence } from './CinematicShayariSequence';
+import { FeedbackPage } from './FeedbackPage';
+import { MemoryJournalDrawer } from './MemoryJournalDrawer';
+import { MemoryJournalNotesMap } from '../types';
 import { soundscapeEngine } from '../utils/audioEngine';
 
 interface EditorialMemoryExperienceProps {
   onLock: () => void;
 }
 
-type ExperienceSection = 'cinematic_gallery' | 'shayari_section' | 'special_note' | 'quiet_final_moment';
+type ExperienceSection = 'cinematic_gallery' | 'shayari_section' | 'special_note' | 'quiet_final_moment' | 'feedback_page';
 
 export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps> = ({ onLock }) => {
   const [section, setSection] = useState<ExperienceSection>('cinematic_gallery');
@@ -33,6 +38,15 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [transitionVariant, setTransitionVariant] = useState<number>(0);
+  const [isJournalOpen, setIsJournalOpen] = useState<boolean>(false);
+  const [journalNotes, setJournalNotes] = useState<MemoryJournalNotesMap>(() => {
+    try {
+      const saved = localStorage.getItem('private_memory_journal_notes');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
   const [windowWidth, setWindowWidth] = useState<number>(() =>
     typeof window !== 'undefined' ? window.innerWidth : 400
   );
@@ -60,6 +74,53 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
     const nextMuted = soundscapeEngine.toggleMute();
     setIsMuted(nextMuted);
   };
+
+  const handleSaveJournalNote = (slideId: string, slideIndex: number, text: string, mood?: string) => {
+    const newNotes: MemoryJournalNotesMap = {
+      ...journalNotes,
+      [slideId]: {
+        slideId,
+        slideIndex,
+        text,
+        mood,
+        updatedAt: new Date().toLocaleDateString(undefined, {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      },
+    };
+    setJournalNotes(newNotes);
+    try {
+      localStorage.setItem('private_memory_journal_notes', JSON.stringify(newNotes));
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleDeleteJournalNote = (slideId: string) => {
+    const newNotes = { ...journalNotes };
+    delete newNotes[slideId];
+    setJournalNotes(newNotes);
+    try {
+      localStorage.setItem('private_memory_journal_notes', JSON.stringify(newNotes));
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleOpenJournal = (slideIndex?: number) => {
+    if (typeof slideIndex === 'number') {
+      setCurrentIndex(slideIndex);
+    }
+    setIsPlayingSlideshow(false);
+    setIsJournalOpen(true);
+  };
+
+  const totalNotesCount = Object.keys(journalNotes).filter(
+    (k) => journalNotes[k]?.text?.trim().length > 0
+  ).length;
 
   // Cycle transition variants smoothly for varied cinematic presentation
   useEffect(() => {
@@ -182,10 +243,27 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
             {section === 'shayari_section' && 'Shayari'}
             {section === 'special_note' && 'Final Scene'}
             {section === 'quiet_final_moment' && 'A Quiet Moment'}
+            {section === 'feedback_page' && 'Feedback & Note'}
           </span>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Journal Note Drawer Trigger */}
+          <button
+            id="experience-journal-toggle"
+            onClick={() => handleOpenJournal(currentIndex)}
+            aria-label="Open Memory Journal Notes"
+            className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#120e10]/85 hover:bg-[#1f151b] backdrop-blur-md border border-[#301c27] hover:border-[#f8c8d8]/50 text-[#f8c8d8] text-[10px] sm:text-xs font-sans-clean tracking-wider uppercase transition-all duration-300 active:scale-95 shadow-md cursor-pointer group"
+          >
+            <Feather className="w-3.5 h-3.5 text-[#f8c8d8] group-hover:scale-110 transition-transform" />
+            <span className="hidden xs:inline">Journal</span>
+            {totalNotesCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-[#f8c8d8] text-[#12080f] text-[9px] font-bold">
+                {totalNotesCount}
+              </span>
+            )}
+          </button>
+
           {/* Sound Toggle */}
           <button
             id="experience-sound-toggle"
@@ -329,6 +407,21 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
                       </span>
                     </div>
 
+                    {/* Private Note Attached Indicator Pill */}
+                    {journalNotes[slot.id]?.text?.trim() && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenJournal(idx);
+                        }}
+                        title="Private note attached"
+                        className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-[#080507]/95 border border-[#f8c8d8]/70 text-[#f8c8d8] flex items-center gap-1 text-[9px] shadow-[0_0_8px_rgba(248,200,216,0.4)] cursor-pointer hover:scale-110 transition-transform z-10"
+                      >
+                        <Feather className="w-2.5 h-2.5 text-[#f8c8d8]" />
+                        <span className="font-sans-clean font-medium">Note</span>
+                      </div>
+                    )}
+
                     {/* Expand icon on hover/selected */}
                     <div
                       onClick={(e) => {
@@ -358,11 +451,31 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full text-center px-4 max-w-md sm:max-w-xl md:max-w-2xl my-2"
+            className="w-full text-center px-4 max-w-md sm:max-w-xl md:max-w-2xl my-2 space-y-2"
           >
             <p className="font-serif-luxury text-sm sm:text-base md:text-lg text-[#faf4ec] font-normal italic leading-relaxed">
               "{activePhoto.hinglishLine}"
             </p>
+
+            {/* Quick Note Attachment Trigger Button */}
+            <div className="flex items-center justify-center pt-0.5">
+              <button
+                onClick={() => handleOpenJournal(currentIndex)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#120a10]/80 hover:bg-[#20101b] border border-[#2d1624] hover:border-[#f8c8d8]/50 text-[11px] sm:text-xs font-sans-clean text-[#c4b3bc] hover:text-[#faf4ec] transition-all cursor-pointer shadow-sm active:scale-95 group"
+              >
+                <Feather className="w-3 h-3 text-[#f8c8d8] group-hover:scale-110 transition-transform" />
+                {journalNotes[activePhoto.id]?.text?.trim() ? (
+                  <span className="flex items-center gap-1">
+                    <span className="text-[#f8c8d8] font-medium">Note:</span>
+                    <span className="font-serif-luxury italic text-[#ece1d8] truncate max-w-[150px] sm:max-w-[220px]">
+                      "{journalNotes[activePhoto.id].text}"
+                    </span>
+                  </span>
+                ) : (
+                  <span>Attach Private Note 📝</span>
+                )}
+              </button>
+            </div>
           </motion.div>
 
           {/* 
@@ -473,14 +586,26 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
                 <span className="text-xs">🧿</span>
               </div>
 
-              <button
-                onClick={() => setSelectedPhoto(null)}
-                aria-label="Close photo view (Esc)"
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#140e12] border border-[#2d1b24] hover:border-[#f8c8d8]/50 text-xs text-[#f8c8d8] hover:text-white transition-all active:scale-95 shadow-md cursor-pointer min-h-[36px]"
-              >
-                <X className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-sans-clean tracking-wider uppercase">Close</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleOpenJournal(selectedPhoto.index - 1)}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#140e12] border border-[#2d1b24] hover:border-[#f8c8d8]/50 text-xs text-[#f8c8d8] hover:text-white transition-all active:scale-95 shadow-md cursor-pointer min-h-[36px]"
+                >
+                  <Feather className="w-3.5 h-3.5 text-[#f8c8d8]" />
+                  <span className="text-[10px] font-sans-clean tracking-wider uppercase">
+                    {journalNotes[selectedPhoto.id]?.text ? 'Edit Note' : 'Attach Note'}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setSelectedPhoto(null)}
+                  aria-label="Close photo view (Esc)"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#140e12] border border-[#2d1b24] hover:border-[#f8c8d8]/50 text-xs text-[#f8c8d8] hover:text-white transition-all active:scale-95 shadow-md cursor-pointer min-h-[36px]"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-sans-clean tracking-wider uppercase">Close</span>
+                </button>
+              </div>
             </div>
 
             {/* Central Un-distorted Photo Mount with 3D Zoom Transition */}
@@ -512,7 +637,7 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15, duration: 0.4 }}
-                className="w-full text-center pt-4 px-4 space-y-1 will-change-[transform,opacity]"
+                className="w-full text-center pt-4 px-4 space-y-1.5 will-change-[transform,opacity]"
               >
                 <p className="font-serif-luxury text-base sm:text-lg md:text-xl text-[#faf4ec] font-normal italic leading-relaxed">
                   "{selectedPhoto.hinglishLine}"
@@ -522,6 +647,21 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
                   <span>•</span>
                   <span className="text-[#f8c8d8]">🧿</span>
                 </div>
+
+                {journalNotes[selectedPhoto.id]?.text?.trim() && (
+                  <div
+                    onClick={() => handleOpenJournal(selectedPhoto.index - 1)}
+                    className="mt-2 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#140a10]/90 border border-[#3b1c2f] hover:border-[#f8c8d8]/60 cursor-pointer text-center max-w-sm mx-auto transition-all group"
+                  >
+                    <Feather className="w-3 h-3 text-[#f8c8d8]" />
+                    <p className="font-serif-luxury italic text-xs text-[#f8c8d8] group-hover:text-white truncate max-w-[220px]">
+                      "{journalNotes[selectedPhoto.id].text}"
+                    </p>
+                    <span className="text-[9px] font-sans-clean text-[#8e7a85] uppercase tracking-wider">
+                      Edit
+                    </span>
+                  </div>
+                )}
               </motion.div>
             </div>
 
@@ -700,6 +840,14 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
               </button>
 
               <button
+                onClick={() => setSection('feedback_page')}
+                className="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-[#1e121b] hover:bg-[#2d1b28] border border-[#452338] hover:border-[#f8c8d8]/70 text-xs sm:text-sm font-sans-clean tracking-widest uppercase text-[#f8c8d8] transition-all active:scale-95 shadow-lg cursor-pointer min-h-[44px]"
+              >
+                <MessageSquareHeart className="w-3.5 h-3.5 text-[#f8c8d8]" />
+                <span>Leave Feedback ✨</span>
+              </button>
+
+              <button
                 onClick={onLock}
                 className="inline-flex items-center gap-1.5 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-transparent hover:bg-[#160f14] border border-[#2b1823] text-xs sm:text-sm font-sans-clean tracking-widest uppercase text-[#99868e] transition-all cursor-pointer min-h-[44px]"
               >
@@ -710,6 +858,41 @@ export const EditorialMemoryExperience: React.FC<EditorialMemoryExperienceProps>
           </motion.div>
         </main>
       )}
+
+      {/* 
+        =======================================================================
+        SECTION 5: FEEDBACK & NOTE PAGE
+        - Private, meaningful feedback form with rating & heartfelt reflections
+        - Local persistence & copy/export options
+        =======================================================================
+      */}
+      {section === 'feedback_page' && (
+        <FeedbackPage
+          onReplay={() => {
+            setCurrentIndex(0);
+            setSection('cinematic_gallery');
+            setIsPlayingSlideshow(true);
+          }}
+          onLock={onLock}
+        />
+      )}
+
+      {/* 
+        =======================================================================
+        OPTIONAL SLIDE-IN PRIVATE JOURNAL DRAWER
+        - Allows user to leave short private text notes attached to any memory slide
+        - Clean slide-in animation with mood tags, copy, and delete
+        =======================================================================
+      */}
+      <MemoryJournalDrawer
+        isOpen={isJournalOpen}
+        onClose={() => setIsJournalOpen(false)}
+        activeSlideIndex={currentIndex}
+        onSelectSlide={(idx) => setCurrentIndex(idx)}
+        notes={journalNotes}
+        onSaveNote={handleSaveJournalNote}
+        onDeleteNote={handleDeleteJournalNote}
+      />
 
       {/* Minimal Footer */}
       <footer className="relative z-20 w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl text-center py-1">

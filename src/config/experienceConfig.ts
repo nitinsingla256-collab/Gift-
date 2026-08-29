@@ -1,20 +1,20 @@
 import { MemoryChapterFoundation } from '../types';
 
 // Internal password verification constants
-const SIMPLE_CODE = '121111';
+
 const SPECIAL_CODE = '3131';
+const VALID_CODES = ['121112', '120711', '3130'];
 
 export function verifyPasscode(input: string): 'simple' | 'special' | 'invalid' {
   const sanitized = input.trim();
   if (sanitized === SPECIAL_CODE) {
     return 'special';
   }
-  if (sanitized === SIMPLE_CODE) {
+  if (VALID_CODES.includes(sanitized)) {
     return 'simple';
   }
   return 'invalid';
 }
-
 export const EXPERIENCE_CONFIG = {
   opening: {
     revealText: 'Something made just for you.',

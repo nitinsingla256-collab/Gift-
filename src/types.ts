@@ -96,3 +96,13 @@ export interface ExperienceConfig {
   specialIntroText: string;
   simpleIntroText: string;
 }
+
+export interface MemoryJournalNote {
+  slideId: string;
+  slideIndex: number;
+  text: string;
+  mood?: string;
+  updatedAt: string;
+}
+
+export type MemoryJournalNotesMap = Record<string, MemoryJournalNote>;
