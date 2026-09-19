@@ -25,6 +25,75 @@
   font-family: var(--font-sans);
 }
 
+.font-romantic {
+  font-family: 'Pacifico', cursive;
+}
+
+.font-handwritten {
+  font-family: 'Dancing Script', cursive;
+}
+
+.font-blocky {
+  font-family: 'Bangers', cursive;
+}
+
+.font-cute {
+  font-family: 'Fredoka', cursive;
+}
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff4d6d 0%, #ffb3c6 100%);
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 9999px;
+  box-shadow: 0 10px 25px -5px rgba(255, 77, 109, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -5px rgba(255, 77, 109, 0.5);
+  background: linear-gradient(135deg, #ff3355 0%, #ffa3b8 100%);
+}
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+.pink-btn {
+  background: #ff758f;
+  color: white;
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: 0 4px 15px rgba(255, 117, 143, 0.4);
+  transition: all 0.2s ease;
+}
+.pink-btn:hover {
+  background: #ff4d6d;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+}
+
+.scrapbook-shadow {
+  box-shadow: 0 20px 40px -15px rgba(80, 20, 40, 0.15), 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
 /* Film grain effect */
 .film-grain {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");

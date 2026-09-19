@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Volume2, VolumeX, Sparkles, Heart } from 'lucide-react';
+import { Volume2, VolumeX, Sparkles, Gift } from 'lucide-react';
 import { soundscapeEngine } from '../utils/audioEngine';
 
 interface OpeningScreenProps {
@@ -8,30 +8,34 @@ interface OpeningScreenProps {
 }
 
 export const OpeningScreen: React.FC<OpeningScreenProps> = ({ onEnter }) => {
-  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isPlaying, setIsPlaying] = useState<boolean>(() => soundscapeEngine.getIsPlaying());
   const [isEntering, setIsEntering] = useState<boolean>(false);
 
-  // Soft soundscape toggle
+  // Sync with audio engine state
+  useEffect(() => {
+    const unsubscribe = soundscapeEngine.subscribe((playing) => {
+      setIsPlaying(playing);
+    });
+    return unsubscribe;
+  }, []);
+
+  // Audio toggle directly triggered on user click
   const toggleSound = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const nextMuted = soundscapeEngine.toggleMute();
-    setIsMuted(nextMuted);
+    soundscapeEngine.toggle();
   };
 
   const handleEnterClick = () => {
     if (isEntering) return;
     setIsEntering(true);
-    // Smooth cinematic audio start on user gesture
-    if (!soundscapeEngine.getIsMuted()) {
-      soundscapeEngine.startAmbientSynth();
-    }
-    // Allow the gentle camera enter & depth dissolve animation to play out
+    // Explicitly start audio inside this direct user gesture
+    soundscapeEngine.play().catch(() => {});
     setTimeout(() => {
       onEnter();
-    }, 950);
+    }, 700);
   };
 
-  // Support Enter key for laptop/desktop accessibility
+  // Support Enter key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
@@ -44,13 +48,13 @@ export const OpeningScreen: React.FC<OpeningScreenProps> = ({ onEnter }) => {
 
   return (
     <motion.div
-      id="cinematic-opening-screen"
+      id="dreamy-opening-screen"
       animate={
         isEntering
           ? {
               scale: 1.05,
               opacity: 0,
-              filter: 'blur(12px)',
+              filter: 'blur(8px)',
             }
           : {
               scale: 1,
@@ -58,190 +62,124 @@ export const OpeningScreen: React.FC<OpeningScreenProps> = ({ onEnter }) => {
               filter: 'blur(0px)',
             }
       }
-      transition={{ duration: 0.95, ease: [0.22, 1, 0.36, 1] }}
-      className="relative min-h-[100dvh] w-full flex flex-col justify-between items-center px-4 sm:px-6 md:px-8 py-6 sm:py-8 text-center select-none overflow-hidden bg-[#030202]"
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      className="relative min-h-[100dvh] w-full flex flex-col justify-between items-center px-4 sm:px-6 py-8 text-center select-none overflow-hidden bg-[#fdfbf6] text-[#222222] font-poppins"
+      style={{
+        backgroundImage: 'linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px)',
+        backgroundSize: '40px 40px',
+      }}
     >
-      {/* 
-        =======================================================================
-        DARK CINEMATIC BACKGROUND: Almost black with subtle warm golden bokeh
-        =======================================================================
-      */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* Subtle Warm/Golden Bokeh Photographic Underlay with Heavy Cinematic Vignette */}
-        <div
-          className="absolute inset-0 bg-cover bg-center filter brightness-[0.24] contrast-[1.1] saturate-[1.2] scale-105"
-          style={{
-            backgroundImage: `url('https://i.ibb.co/21HwmBjM/Screenshot-2026-06-27-14-03-58-20-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg')`,
-          }}
-        />
+      {/* Corner Scrapbook Embellishments */}
+      <motion.img
+        src="/scrapbook/decoration.webp"
+        alt="Decoration"
+        className="absolute top-0 left-0 w-44 sm:w-64 md:w-96 pointer-events-none drop-shadow-sm opacity-90"
+        initial={{ opacity: 0, x: -40, y: -40 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 1 }}
+      />
+      <motion.img
+        src="/scrapbook/flower1.webp"
+        alt="Flower"
+        className="absolute bottom-0 left-0 w-36 sm:w-52 pointer-events-none drop-shadow-sm opacity-90"
+        initial={{ opacity: 0, x: -30, y: 30 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 1.2 }}
+      />
+      <motion.img
+        src="/scrapbook/tulip.webp"
+        alt="Tulip"
+        className="absolute bottom-0 right-0 w-36 sm:w-52 pointer-events-none drop-shadow-sm opacity-90"
+        initial={{ opacity: 0, x: 30, y: 30 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 1.2 }}
+      />
+      <motion.img
+        src="/scrapbook/cherry.webp"
+        alt="Cherry"
+        className="absolute top-4 right-4 w-20 sm:w-28 pointer-events-none drop-shadow-sm"
+        initial={{ opacity: 0, rotate: -20 }}
+        animate={{ opacity: 1, rotate: 0 }}
+        transition={{ duration: 1 }}
+      />
 
-        {/* Deep cinematic vignette & dark gradient overlays */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,4,5,0.45)_0%,rgba(3,2,2,0.92)_70%,rgba(2,1,2,0.99)_100%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#030202]/90 via-transparent to-[#030202]/95" />
-
-        {/* Floating gentle golden particles */}
-        <div className="absolute inset-0">
-          {[...Array(14)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{
-                x: `${(i * 19) % 100}vw`,
-                y: `${(i * 23) % 100}vh`,
-                opacity: 0.15,
-                scale: 0.6,
-              }}
-              animate={{
-                y: [`${(i * 23) % 100}vh`, `${((i * 23 + 40) % 100)}vh`],
-                opacity: [0.15, 0.45, 0.15],
-                scale: [0.6, 1.1, 0.6],
-              }}
-              transition={{
-                duration: 9 + (i % 6) * 2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className="absolute w-1.5 h-1.5 rounded-full bg-[#e6d0a8]/40 blur-[1px]"
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Floating Header: Discreet Branding & Sound Control */}
-      <header className="relative z-20 w-full max-w-md sm:max-w-xl md:max-w-3xl lg:max-w-4xl flex items-center justify-between pt-2">
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2 }}
-          className="flex items-center gap-2"
-        >
-          <span className="text-xs">🧿</span>
-          <span className="text-[10px] font-sans-clean font-light tracking-[0.35em] uppercase text-[#cfc2be]/80">
-            For You
-          </span>
-        </motion.div>
-
-        {/* Sound Toggle */}
-        <motion.button
-          id="opening-sound-toggle"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.15 }}
+      {/* Top Header with Music Controller */}
+      <header className="relative z-20 w-full max-w-4xl flex items-center justify-end">
+        {/* Music Player Button (Preet Re) */}
+        <button
+          id="opening-music-toggle"
           onClick={toggleSound}
-          aria-label={isMuted ? 'Turn Sound On' : 'Turn Sound Off'}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#120f11]/70 hover:bg-[#1f181c]/80 backdrop-blur-md border border-[#382630]/60 text-[#f8c8d8] text-[10px] font-sans-clean tracking-wider uppercase transition-all duration-300 active:scale-95 shadow-lg"
+          className={`flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-cute transition-all shadow-md active:scale-95 cursor-pointer ${
+            isPlaying
+              ? 'bg-rose-500 text-white border-rose-400 shadow-rose-200 animate-none'
+              : 'bg-white/90 text-rose-600 border-rose-200 hover:bg-rose-50 animate-pulse'
+          }`}
         >
-          {isMuted ? (
-            <>
-              <VolumeX className="w-3 h-3 text-[#d9a5a0]" />
-              <span className="text-[#a69299]">Sound Off</span>
-            </>
+          {isPlaying ? (
+            <Volume2 size={16} className="animate-bounce" />
           ) : (
-            <>
-              <Volume2 className="w-3 h-3 text-[#f8c8d8]" />
-              <span>Sound On</span>
-            </>
+            <VolumeX size={16} />
           )}
-        </motion.button>
+          <span>{isPlaying ? 'Preet Re 🎵' : 'Play Music 🎵'}</span>
+        </button>
       </header>
 
-      {/* 
-        =======================================================================
-        CENTER SECTION: Romantic Cinematic Greeting
-        =======================================================================
-      */}
-      <main className="relative z-20 w-full max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-3xl my-auto flex flex-col items-center justify-center space-y-8 py-6">
-        {/* Tasteful Decorative Center Accents */}
+      {/* Main Center Invitation Card */}
+      <div className="relative z-20 flex flex-col items-center max-w-lg px-4 my-auto py-8">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-          className="flex items-center justify-center gap-3 text-[#e6d0a8]"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8, type: 'spring' }}
+          className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-pink-100/90 border-4 border-white shadow-xl flex items-center justify-center mb-6 text-pink-500"
         >
-          <span className="w-8 h-[1px] bg-gradient-to-r from-transparent to-[#e6d0a8]/60" />
-          <Sparkles className="w-3.5 h-3.5 text-[#e6d0a8]/90" />
-          <span className="w-8 h-[1px] bg-gradient-to-l from-transparent to-[#e6d0a8]/60" />
+          <motion.img
+            src="/scrapbook/bow.webp"
+            alt="Bow"
+            className="w-14 sm:w-16 h-auto drop-shadow-sm"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 2.5, repeat: Infinity }}
+          />
         </motion.div>
 
-        {/* Headings */}
-        <div className="space-y-3.5">
-          <motion.h1
-            initial={{ opacity: 0, y: 16, filter: 'blur(8px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
-            className="font-serif-luxury text-3xl sm:text-5xl text-[#faf4ec] font-normal tracking-[0.18em] leading-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)] uppercase"
-          >
-            HAPPY BIRTHDAY
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.4, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="font-serif-luxury italic text-sm sm:text-base text-[#cfbebb] font-light tracking-wide max-w-xs mx-auto leading-relaxed"
-          >
-            Something made just for you.
-          </motion.p>
-        </div>
-
-        {/* Subtle 🧿 Amulet Badge */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.75 }}
-          transition={{ delay: 0.7, duration: 1.2 }}
-          className="flex items-center gap-2 text-[#f8c8d8]/70 text-xs"
+        {/* Happy Birthday 🧿 title */}
+        <motion.h1
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="text-5xl sm:text-6xl md:text-7xl font-romantic text-red-900 leading-tight mb-4 drop-shadow-sm"
         >
-          <span className="text-xs">🧿</span>
-          <span className="text-[10px] tracking-[0.3em] uppercase font-sans-clean font-light text-[#b39ea8]">
-            A Private Memory Film
-          </span>
-          <span className="text-xs">🧿</span>
-        </motion.div>
+          Happy Birthday 🧿
+        </motion.h1>
 
-        {/* 
-          =======================================================================
-          ENTRANCE BUTTON: Mint Green, Heart-Inspired Shape, Subtle Ambient Glow
-          =======================================================================
-        */}
-        <motion.div
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative pt-3 flex items-center justify-center"
-        >
-          {/* Subtle Ambient Mint-Green Glow Halo */}
-          <div className="absolute inset-0 rounded-full bg-[#a8e6cf]/[0.22] blur-xl scale-125 pointer-events-none transition-all duration-700 group-hover:bg-[#a8e6cf]/[0.35]" />
-
-          {/* Heart-Embossed Elegant Rounded Pill Button */}
-          <button
-            id="opening-enter-button"
-            onClick={handleEnterClick}
-            className="group relative px-8 sm:px-10 py-3.5 rounded-full overflow-hidden text-sm font-light text-[#0b1e16] bg-gradient-to-r from-[#d8faed] via-[#b8eed9] to-[#9ee5cb] hover:from-[#e4fcf2] hover:to-[#b8eed9] transition-all duration-300 active:scale-95 shadow-[0_0_32px_rgba(168,230,207,0.45)] hover:shadow-[0_0_46px_rgba(168,230,207,0.7)] border border-[#effcf6]/80 flex items-center gap-3 cursor-pointer"
-          >
-            {/* Subtle inner glass highlight */}
-            <span className="absolute inset-0 rounded-full bg-gradient-to-b from-white/40 to-transparent opacity-80 pointer-events-none" />
-
-            {/* Heart Icon integrated inside the mint green button */}
-            <div className="relative z-10 w-6 h-6 rounded-full bg-[#0a1c14]/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <Heart className="w-3.5 h-3.5 text-[#0a1c14] fill-[#0a1c14]/20" />
-            </div>
-
-            <span className="relative z-10 font-sans-clean text-xs font-semibold tracking-[0.28em] uppercase text-[#0a1c14]">
-              ENTER
-            </span>
-          </button>
-        </motion.div>
-      </main>
-
-      {/* Minimal Footer */}
-      <footer className="relative z-20 w-full max-w-md pb-2 text-center">
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.4 }}
-          transition={{ delay: 1.2, duration: 1 }}
-          className="font-sans-clean text-[9.5px] tracking-[0.35em] uppercase text-[#8a7b82] font-light"
+          initial={{ y: 15, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.35, duration: 0.8 }}
+          className="font-handwritten text-2xl sm:text-3xl text-gray-700 mb-8 max-w-md"
         >
-          Special Edition • 🧿
+          "Something made with pure love and care, just for you."
         </motion.p>
+
+        {/* Surprise Button */}
+        <motion.button
+          id="opening-enter-button"
+          onClick={handleEnterClick}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="btn-primary text-2xl sm:text-3xl px-12 sm:px-16 py-4 sm:py-5 shadow-2xl flex items-center gap-3 cursor-pointer"
+        >
+          <span>Surprise</span>
+          <Gift size={24} className="text-pink-100 animate-bounce" />
+        </motion.button>
+      </div>
+
+      {/* Footer info */}
+      <footer className="relative z-20 text-center">
+        <p className="text-xs font-cute text-gray-400 tracking-wider flex items-center justify-center gap-1.5">
+          <span>Tap to unlock your birthday surprise</span>
+          <span>♡</span>
+          <span>🧿</span>
+        </p>
       </footer>
     </motion.div>
   );

@@ -1,6 +1,6 @@
 {
   "name": "A Private Memory",
-  "description": "A cinematic, mobile-first private interactive birthday memory experience with dual password-gated access paths.",
+  "description": "A dreamy scrapbook memory experience made with love, featuring personalized scrapbooks, polaroids, and music.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

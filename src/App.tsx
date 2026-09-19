@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { AmbientBackground } from './components/AmbientBackground';
-import { MusicController } from './components/MusicController';
 import { PageTransition } from './components/PageTransition';
 import { OpeningScreen } from './components/OpeningScreen';
 import { PasswordGate } from './components/PasswordGate';
 import { SpecialIntro } from './components/SpecialIntro';
-import { EditorialMemoryExperience } from './components/EditorialMemoryExperience';
+import { DreamyScrapbookExperience } from './components/DreamyScrapbookExperience';
 import { ScreenState, PasswordType } from './types';
 
 export default function App() {
@@ -15,13 +13,13 @@ export default function App() {
     if (type === 'special') {
       setScreenState('special_intro');
     } else {
-      // Correct password unlocks the full-screen 3D spatial memory experience
+      // Correct password unlocks the dreamy scrapbook experience
       setScreenState('cinematic_film');
     }
   };
 
   const handleSpecialIntroComplete = () => {
-    // Transition from special intro to the 3D spatial memory experience
+    // Transition from special intro to the dreamy scrapbook experience
     setScreenState('cinematic_film');
   };
 
@@ -34,10 +32,10 @@ export default function App() {
   };
 
   return (
-    <main id="app-root" className="relative min-h-[100dvh] w-full bg-[#020202] text-[#e6e0d4] overflow-x-hidden flex justify-center items-center font-sans-clean">
-      {/* Cinematic Ambient Canvas & Film Grain */}
-      <AmbientBackground />
-
+    <main
+      id="app-root"
+      className="relative min-h-[100dvh] w-full bg-[#fdfbf6] text-[#222222] overflow-x-hidden flex justify-center items-center font-poppins"
+    >
       {/* Viewport Container - Adapts seamlessly from mobile to wide desktop */}
       <div className="relative w-full min-h-[100dvh] flex flex-col justify-center items-center z-10">
         <PageTransition pageKey={screenState}>
@@ -57,11 +55,10 @@ export default function App() {
           )}
 
           {screenState === 'cinematic_film' && (
-            <EditorialMemoryExperience onLock={handleReturnToOpening} />
+            <DreamyScrapbookExperience onLock={handleReturnToOpening} />
           )}
         </PageTransition>
       </div>
     </main>
   );
 }
-
