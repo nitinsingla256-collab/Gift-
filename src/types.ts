@@ -14,6 +14,7 @@ export type PasswordType = 'simple' | 'special' | 'invalid';
 export interface MemoryImage {
   id: string;
   src: string;
+  fallbackSrc?: string;
   title?: string;
   caption?: string;
   date?: string;

@@ -24,7 +24,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '01 / 10',
     image: {
       id: 'photo-1',
-      src: 'https://i.ibb.co/1JBJpkMf/IMG-20260727-WA0021-4.jpg',
+      src: '/photos/photo-1.jpg',
+      fallbackSrc: 'https://i.ibb.co/1JBJpkMf/IMG-20260727-WA0021-4.jpg',
       title: 'Gentle Smile',
       caption: 'Ye smile bas photo mein nahi hai... pura mood change kar dene ki capability rakhti hai.',
       aspectRatio: 'portrait',
@@ -39,7 +40,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '02 / 10',
     image: {
       id: 'photo-2',
-      src: 'https://i.ibb.co/MyBg0PTw/IMG-20260728-WA0011-2.jpg',
+      src: '/photos/photo-2.jpg',
+      fallbackSrc: 'https://i.ibb.co/MyBg0PTw/IMG-20260728-WA0011-2.jpg',
       title: 'First Gaze',
       caption: 'Apki aankhon ka koi jawaab nahi... seriously, camera bhi inke saamne thoda nervous lagta hai. 🧿',
       aspectRatio: 'portrait',
@@ -54,7 +56,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '03 / 10',
     image: {
       id: 'photo-3',
-      src: 'https://i.ibb.co/vxP8RdhX/IMG-20260728-WA0021-2.jpg',
+      src: '/photos/photo-3.jpg',
+      fallbackSrc: 'https://i.ibb.co/vxP8RdhX/IMG-20260728-WA0021-2.jpg',
       title: 'Effortless Grace',
       caption: 'Honestly, is picture ko dekh ke ek hi thought aata hai — itni effortlessly pretty kaise? 🧿',
       aspectRatio: 'portrait',
@@ -69,7 +72,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '04 / 10',
     image: {
       id: 'photo-4',
-      src: 'https://i.ibb.co/5WSPTvhD/Screenshot-2026-06-02-01-53-43-45-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
+      src: '/photos/photo-4.jpg',
+      fallbackSrc: 'https://i.ibb.co/5WSPTvhD/Screenshot-2026-06-02-01-53-43-45-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
       title: 'Silent Charm',
       caption: 'Is wali photo mein kuch toh alag hai... aur haan, main exactly kya hai ye explain nahi kar paunga.',
       aspectRatio: 'portrait',
@@ -84,7 +88,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '05 / 10',
     image: {
       id: 'photo-5',
-      src: 'https://i.ibb.co/wFzwSqSR/Screenshot-2026-06-04-10-19-47-20-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
+      src: '/photos/photo-5.jpg',
+      fallbackSrc: 'https://i.ibb.co/wFzwSqSR/Screenshot-2026-06-04-10-19-47-20-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
       title: 'Pure Simplicity',
       caption: 'Simple, sweet aur bilkul genuine... aapki yahi saadgi seedha dil chhu jaati hai. ✨',
       aspectRatio: 'portrait',
@@ -99,7 +104,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '06 / 10',
     image: {
       id: 'photo-6',
-      src: 'https://i.ibb.co/0jbq4wRN/Screenshot-2026-06-21-13-42-18-05-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
+      src: '/photos/photo-6.jpg',
+      fallbackSrc: 'https://i.ibb.co/0jbq4wRN/Screenshot-2026-06-21-13-42-18-05-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
       title: 'Warmth',
       caption: 'Bas ek baar dekh lo, aur din bhar ki saari thakaan gayab... magic se kam thodi na ho. 🧿',
       aspectRatio: 'portrait',
@@ -114,7 +120,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '07 / 10',
     image: {
       id: 'photo-7',
-      src: 'https://i.ibb.co/dwDjxkkg/Screenshot-2026-06-21-13-42-44-57-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
+      src: '/photos/photo-7.jpg',
+      fallbackSrc: 'https://i.ibb.co/dwDjxkkg/Screenshot-2026-06-21-13-42-44-57-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
       title: 'Candid Joy',
       caption: 'Candid pictures mein aapki jo real wali muskurahat aati hai, uska koi muqabla nahi.',
       aspectRatio: 'portrait',
@@ -129,7 +136,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '08 / 10',
     image: {
       id: 'photo-8',
-      src: 'https://i.ibb.co/cSgc3SWj/Screenshot-2026-06-23-20-00-30-75-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
+      src: '/photos/photo-8.jpg',
+      fallbackSrc: 'https://i.ibb.co/cSgc3SWj/Screenshot-2026-06-23-20-00-30-75-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
       title: 'Khilkhilati Smile',
       caption: 'Nazar na lage kabhi is noor ko... hamesha aise hi khilkhilati rehna. 🧿',
       aspectRatio: 'portrait',
@@ -144,7 +152,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '09 / 10',
     image: {
       id: 'photo-9',
-      src: 'https://i.ibb.co/dJjyP4tv/Screenshot-2026-06-27-14-05-02-08-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
+      src: '/photos/photo-9.jpg',
+      fallbackSrc: 'https://i.ibb.co/dJjyP4tv/Screenshot-2026-06-27-14-05-02-08-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
       title: 'Timeless Grace',
       caption: 'A timeless kind of grace... jise kisi filter ya words mein capture karna mushkil hai.',
       aspectRatio: 'portrait',
@@ -159,7 +168,8 @@ export const tenHerPhotographs: GalleryMemorySlot[] = [
     indexFormatted: '10 / 10',
     image: {
       id: 'photo-10',
-      src: 'https://i.ibb.co/5hy19fCp/Screenshot-2026-06-30-13-59-00-77-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
+      src: '/photos/photo-10.jpg',
+      fallbackSrc: 'https://i.ibb.co/5hy19fCp/Screenshot-2026-06-30-13-59-00-77-a63b0f8076346d26cbdc1b971a1da2a7-2.jpg',
       title: 'Fursat Se Banaya',
       caption: 'Rab ne sach mein fursat se aur bohot pyaar se banaya hai aapko. ✨ 🧿',
       aspectRatio: 'portrait',

@@ -178,12 +178,46 @@ export const DreamyScrapbookExperience: React.FC<DreamyScrapbookExperienceProps>
   // Touch swipe support for polaroid carousel
   const [touchStart, setTouchStart] = useState<number | null>(null);
 
-  // Subscribe to audio engine state
+  // Subscribe to audio engine state & eager preload all photos & stickers
   useEffect(() => {
     soundscapeEngine.play().catch(() => {});
     const unsubscribe = soundscapeEngine.subscribe((playing) => {
       setIsPlaying(playing);
     });
+
+    // Immediately preload all 10 photos into memory for instant transitions
+    tenHerPhotographs.forEach((p) => {
+      const img = new Image();
+      img.src = p.image.src;
+      if (p.image.fallbackSrc) {
+        const fb = new Image();
+        fb.src = p.image.fallbackSrc;
+      }
+    });
+
+    // Preload scrapbook embellishments
+    const stickers = [
+      '/scrapbook/waxSeal.webp',
+      '/scrapbook/cake.webp',
+      '/scrapbook/partyPopper.webp',
+      '/scrapbook/teddy.webp',
+      '/scrapbook/cheers.webp',
+      '/scrapbook/camera.webp',
+      '/scrapbook/gift.webp',
+      '/scrapbook/bow.webp',
+      '/scrapbook/balloons.webp',
+      '/scrapbook/bdayBanner.webp',
+      '/scrapbook/decoration.webp',
+      '/scrapbook/flower1.webp',
+      '/scrapbook/tulip.webp',
+      '/scrapbook/cherry.webp',
+      '/scrapbook/redflower.webp',
+    ];
+    stickers.forEach((s) => {
+      const img = new Image();
+      img.src = s;
+    });
+
     return unsubscribe;
   }, []);
 
@@ -781,10 +815,8 @@ export const DreamyScrapbookExperience: React.FC<DreamyScrapbookExperienceProps>
                   />
 
                   {/* Golden Wax Seal on Flap Tip */}
-                  <motion.img
-                    src="/scrapbook/waxSeal.webp"
-                    alt="Wax Seal"
-                    className="absolute top-[130px] sm:top-[170px] md:top-[195px] left-1/2 -translate-x-1/2 w-20 sm:w-24 md:w-28 h-auto z-40 drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] cursor-pointer"
+                  <motion.div
+                    className="absolute top-[130px] sm:top-[170px] md:top-[195px] left-1/2 -translate-x-1/2 w-20 sm:w-24 md:w-28 aspect-square z-40 drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] cursor-pointer flex items-center justify-center select-none"
                     animate={
                       isOpeningEnvelope
                         ? { scale: [1, 1.2, 0], opacity: [1, 1, 0] }
@@ -793,7 +825,26 @@ export const DreamyScrapbookExperience: React.FC<DreamyScrapbookExperienceProps>
                     transition={{
                       scale: isOpeningEnvelope ? { duration: 0.4 } : { duration: 2, repeat: Infinity },
                     }}
-                  />
+                  >
+                    <img
+                      src="/scrapbook/waxSeal.webp"
+                      alt="Wax Seal"
+                      loading="eager"
+                      className="w-full h-full object-contain pointer-events-none"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = document.getElementById('wax-seal-fallback');
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
+                    />
+                    <div
+                      id="wax-seal-fallback"
+                      style={{ display: 'none' }}
+                      className="w-full h-full rounded-full bg-gradient-to-br from-amber-600 via-red-700 to-red-900 border-4 border-amber-300 shadow-xl items-center justify-center text-amber-100 font-romantic text-2xl"
+                    >
+                      🧿
+                    </div>
+                  </motion.div>
 
                   {/* Rising Letter Peek animation during opening */}
                   <AnimatePresence>
@@ -1028,6 +1079,13 @@ export const DreamyScrapbookExperience: React.FC<DreamyScrapbookExperienceProps>
                         <img
                           src={currentPhoto.image.src}
                           alt={currentPhoto.title}
+                          loading="eager"
+                          decoding="async"
+                          onError={(e) => {
+                            if (currentPhoto.image.fallbackSrc && e.currentTarget.src !== currentPhoto.image.fallbackSrc) {
+                              e.currentTarget.src = currentPhoto.image.fallbackSrc;
+                            }
+                          }}
                           className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-700"
                         />
                         {/* Expand hint icon */}
@@ -1178,6 +1236,13 @@ export const DreamyScrapbookExperience: React.FC<DreamyScrapbookExperienceProps>
                 <img
                   src={selectedPhoto.image.src}
                   alt={selectedPhoto.title}
+                  loading="eager"
+                  decoding="async"
+                  onError={(e) => {
+                    if (selectedPhoto.image.fallbackSrc && e.currentTarget.src !== selectedPhoto.image.fallbackSrc) {
+                      e.currentTarget.src = selectedPhoto.image.fallbackSrc;
+                    }
+                  }}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -1231,6 +1296,13 @@ export const DreamyScrapbookExperience: React.FC<DreamyScrapbookExperienceProps>
         onSaveNote={handleSaveJournalNote}
         onDeleteNote={handleDeleteJournalNote}
       />
+
+      {/* Hidden browser DOM cache warmer for all 10 precious memories */}
+      <div className="hidden pointer-events-none opacity-0 fixed -top-96 left-0" aria-hidden="true">
+        {tenHerPhotographs.map((p) => (
+          <img key={p.id} src={p.image.src} alt="" loading="eager" decoding="async" />
+        ))}
+      </div>
     </div>
   );
 };
