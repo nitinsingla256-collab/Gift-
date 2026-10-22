@@ -1021,7 +1021,7 @@ export const DreamyScrapbookExperience: React.FC<DreamyScrapbookExperienceProps>
                 CHAPTER OF MEMORIES 🧿
               </h2>
               <p className="font-cute text-sm sm:text-base text-pink-200 tracking-wider uppercase mt-1">
-                Ten Cherished Moments & Romantic Hinglish Shayaris
+                Fifteen Cherished Moments & Romantic Hinglish Shayaris
               </p>
             </div>
 
